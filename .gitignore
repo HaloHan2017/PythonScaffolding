@@ -21,36 +21,35 @@ wheels/
 *.egg
 
 # Virtual Environment
+.venv/
 venv/
-env/
 ENV/
-.env
-.venv
+env/
 
-# Database
-*.db
-*.sqlite3
+# uv
+uv.lock
+.uv/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
+
+# Environment
+.env
+.env.local
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Logs
+# Project specific
 *.log
-logs/
-
-# Coverage
-.coverage
-htmlcov/
-
-# Migrations
-migrations/versions/*
-
-# Docker
-*.env

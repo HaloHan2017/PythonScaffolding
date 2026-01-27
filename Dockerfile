@@ -1,5 +1,5 @@
-# Use Python 3.11 slim image
-FROM python:3.11-slim as builder
+# Use Python 3.13 slim image
+FROM python:3.13-slim
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -9,40 +9,22 @@ ENV PIP_NO_CACHE_DIR=1
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies and uv
 RUN apt-get update && apt-get install -y \
-    gcc \
-    g++ \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
+    curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# Copy requirements
-COPY requirements/prod.txt .
+# Add uv to PATH
+ENV PATH="/root/.cargo/bin:$PATH"
 
-# Install Python dependencies
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r prod.txt
+# Copy project files
+COPY pyproject.toml uv.lock ./
+COPY src ./src
+COPY gunicorn.py ./
 
-# Copy application
-COPY . .
-
-# Create non-root user
-RUN useradd -m -u 1000 appuser && \
-    chown -R appuser:appuser /app
-
-USER appuser
-
-# Production stage
-FROM python:3.11-slim
-
-WORKDIR /app
-
-# Copy Python dependencies from builder
-COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
-COPY --from=builder /usr/local/bin /usr/local/bin
-
-# Copy application
-COPY --from=builder /app /app
+# Install dependencies using uv
+RUN uv sync --extra prod --no-dev
 
 # Create non-root user
 RUN useradd -m -u 1000 appuser && \
@@ -51,11 +33,11 @@ RUN useradd -m -u 1000 appuser && \
 USER appuser
 
 # Expose port
-EXPOSE 5000
+EXPOSE 8000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:5000/health || exit 1
+    CMD curl -f http://localhost:8000/health || exit 1
 
-# Run application
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "--threads", "2", "wsgi:app"]
+# Run application with gunicorn
+CMD ["uv", "run", "gunicorn", "-c", "gunicorn.py", "src.app:app"]

@@ -1,58 +1,39 @@
-.PHONY: help install test lint format clean docker-up docker-down
+.PHONY: help install test lint format clean
 
 help: ## Show this help message
 	@echo 'Usage:'
-	@sed -n 's/^##//p' ${MAKEFILE_LIST} | column -t -s ':' | sed -e 's/^/ /'
+	@echo 'make install      - Install dependencies (Local environment)'
+	@echo 'make install-prod - Install dependencies (Cloud environment)'
+	@echo 'make run          - Run Local server'
+	@echo 'make run-prod     - Run Cloud server'
+	@echo 'make test         - Run tests'
+	@echo 'make lint         - Code quality checks'
+	@echo 'make format       - Format code'
+	@echo 'make clean        - Clean temporary files'
 
 ## Development
-install: ## Install development dependencies
-	pip install -r requirements/dev.txt
-	pip install -e .
+install: ## Install development dependencies (Local)
+	uv sync --all-extras
 
-run: ## Run development server
-	python manage.py run-dev
+install-prod: ## Install production dependencies (Cloud)
+	uv sync --extra prod
 
-test: ## Run tests
-	pytest -v --cov=app tests/
+run: ## Run Local server
+	uv run flask --app src run --debug --host 0.0.0.0 --port 5000
 
-test-cov: ## Run tests with coverage report
-	pytest --cov=app --cov-report=html tests/
+run-prod: ## Run Cloud server with gunicorn
+	uv run gunicorn -c gunicorn_config.py src.app:app
 
 lint: ## Run code quality checks
-	flake8 app tests
-	mypy app
-	black --check app tests
-	isort --check-only app tests
+	uv run flake8 src
+	uv run mypy src
+	uv run black --check src
+	uv run isort --check-only src
 
 format: ## Format code
-	black app tests
-	isort app tests
+	uv run black src
+	uv run isort src
 
-## Database
-init-db: ## Initialize database
-	python manage.py init-db
-
-migrate: ## Create migration
-	flask db migrate -m "Migration message"
-
-upgrade: ## Apply migrations
-	flask db upgrade
-
-seed: ## Seed database
-	python manage.py seed-db
-
-## Docker
-docker-up: ## Start docker containers
-	docker-compose up -d
-
-docker-down: ## Stop docker containers
-	docker-compose down
-
-docker-build: ## Build docker image
-	docker-compose build
-
-docker-logs: ## View docker logs
-	docker-compose logs -f
 
 ## Cleanup
 clean: ## Clean up temporary files
@@ -60,4 +41,4 @@ clean: ## Clean up temporary files
 	find . -type f -name "*.pyc" -delete
 	find . -type f -name "*.pyo" -delete
 	find . -type f -name ".DS_Store" -delete
-	rm -rf .coverage htmlcov build dist *.egg-info
+	rm -rf .coverage htmlcov build dist *.egg-info .venv uv.lock
