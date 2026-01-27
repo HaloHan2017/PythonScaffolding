@@ -9,7 +9,7 @@
 - 🏗️ **应用工厂模式** - 灵活的应用创建和配置
 - 🎨 **代码质量工具** - black、isort、flake8、mypy
 - 📦 **现代化依赖管理** - 使用 pyproject.toml + **uv**
-- 🔧 **生产就绪** - 集成 gunicorn/waitress 配置
+- 🔧 **生产就绪** - 集成 gunicorn 配置 + Docker 部署
 - 🎯 **可扩展架构** - 预留 models、services、middleware 目录
 
 ## 📋 依赖
@@ -19,15 +19,14 @@
 - **pydantic** `>=2.3.0` - 数据验证
 
 ### 开发依赖
-- **black** `>=23.9.1` - 代码格式化
+- **black** `>=24.10.0` - 代码格式化
 - **isort** `>=5.12.0` - import 排序
 - **flake8** `>=6.1.0` - 代码检查
 - **mypy** `>=1.5.1` - 类型检查
 - **pre-commit** `>=4.5.1` - Git 提交前钩子
 
-### 生产依赖 (Cloud)
+### 云上依赖 (Cloud)
 - **gunicorn** `>=21.2.0` - 生产环境 WSGI 服务器（Linux/macOS）
-- **waitress** `>=2.1.2` - 生产环境 WSGI 服务器（Windows）
 
 ## 🚀 快速开始
 
@@ -59,7 +58,7 @@ uv 会自动创建虚拟环境并安装依赖。
 uv sync --all-extras
 ```
 
-#### ☁️ Cloud 环境（线上生产）
+#### ☁️ Cloud 环境（线上/容器部署）
 
 **Windows:**
 ```bash
@@ -77,16 +76,11 @@ uv run flask --app src run --debug
 
 访问 http://localhost:5000
 
-#### ☁️ Cloud 环境（线上部署）
+#### ☁️ Cloud 环境（Linux/容器）
 
 **Linux:**
 ```bash
 uv run gunicorn -c gunicorn.py src.app:app
-```
-
-**Windows:**
-```bash
-uv run python waitress_serve.py
 ```
 
 ## 📁 项目结构
@@ -94,8 +88,8 @@ uv run python waitress_serve.py
 ```
 PythonScaffolding/
 ├── src/                          # 源代码目录
-│   ├── __init__.py              # Flask 应用工厂
-│   ├── app.py                   # WSGI 入口点
+│   ├── __init__.py              # Flask 应用工厂 (create_app)
+│   ├── app.py                   # WSGI 入口点 (供 gunicorn 使用)
 │   │
 │   ├── api/                     # API 路由层
 │   │   └── v1/                  # API v1 版本
@@ -118,14 +112,14 @@ PythonScaffolding/
 │   └── utils/                   # 工具函数（预留）
 │       └── __init__.py
 │
-├── .gitignore                  # Git 忽略文件
-├── .pre-commit-config.yaml     # Git pre-commit 钩子
-├── Dockerfile                  # Docker 镜像构建
-├── gunicorn.py                 # Gunicorn 生产配置（Linux/macOS）
-├── waitress_serve.py           # Waitress 生产配置（Windows）
-├── Makefile                    # 常用命令快捷方式
-├── pyproject.toml             # 项目配置和依赖
-└── README.md                   # 项目文档
+├── .gitignore                   # Git 忽略文件
+├── .pre-commit-config.yaml      # Git pre-commit 钩子配置
+├── Dockerfile                   # Docker 镜像构建
+├── gunicorn.py                  # Gunicorn 生产配置（Linux/macOS/容器）
+├── Makefile                     # 常用命令快捷方式（macOS/Linux）
+├── pyproject.toml               # 项目配置和依赖
+├── uv.toml                      # uv 镜像源配置（可选）
+└── README.md                    # 项目文档
 ```
 
 ### 📝 目录说明
@@ -133,7 +127,7 @@ PythonScaffolding/
 #### `src/` - 源代码
 应用的所有源代码都在此目录下。
 
-- **`__init__.py`** - Flask 应用工厂模式，创建和配置应用实例
+- **`__init__.py`** - Flask 应用工厂模式，创建和配置应用实例 (create_app)
 - **`app.py`** - WSGI 入口点，供 gunicorn 等生产服务器使用
 
 #### `src/api/` - API 路由
@@ -236,7 +230,6 @@ uv sync --extra prod      # Cloud 环境（仅生产依赖）
 # 运行服务器
 uv run flask --app src run --debug              # Local 服务器
 uv run gunicorn -c gunicorn.py src.app:app      # Cloud 服务器（仅 Linux/macOS）
-uv run python waitress_serve.py                 # Cloud 服务器（Windows）
 
 # 代码质量
 uv run flake8 src                               # 代码检查
@@ -332,45 +325,9 @@ index-url = "https://pypi.company.com/simple"
 **常用国内镜像：**
 
 ```toml
-# 清华大学镜像（推荐）
+# 清华大学镜像（示例）
 [tool.uv]
 index-url = "https://pypi.tuna.tsinghua.edu.cn/simple"
-```
-
-```toml
-# 阿里云镜像
-[tool.uv]
-index-url = "https://mirrors.aliyun.com/pypi/simple"
-```
-
-```toml
-# 腾讯云镜像
-[tool.uv]
-index-url = "https://mirrors.cloud.tencent.com/pypi/simple"
-```
-
-```toml
-# 华为云镜像
-[tool.uv]
-index-url = "https://repo.huaweicloud.com/repository/pypi/simple"
-```
-
-**使用自签名证书的私有源：**
-
-```toml
-[tool.uv]
-index-url = "https://pypi.company.com/simple"
-trusted-hosts = ["pypi.company.com"]
-```
-
-**多个镜像源（主源+备用）：**
-
-```toml
-[tool.uv]
-index-url = "https://pypi.company.com/simple"
-extra-index-url = [
-    "https://pypi.org/simple",  # 官方源作为备用
-]
 ```
 
 ## 🤝 贡献
