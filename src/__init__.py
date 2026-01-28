@@ -37,6 +37,6 @@ def create_app() -> Flask:
 
 def register_blueprints(app: Flask):
     """Register API blueprints"""
-    from src.api.v1 import api_v1
+    from src.api.user import UserController
 
-    app.register_blueprint(api_v1, url_prefix="/api/v1")
+    app.register_blueprint(UserController)

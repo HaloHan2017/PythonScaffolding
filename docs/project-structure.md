@@ -6,19 +6,20 @@ PythonScaffolding/
 │   ├── __init__.py              # Flask 应用工厂 (create_app)
 │   │
 │   ├── api/                     # API 路由层
-│   │   └── v1/                  # API v1 版本
-│   │       ├── __init__.py      # v1 blueprint
-│   │       └── hello.py         # Hello 和 Ping 端点
+│   │   ├── __init__.py          # API 模块导出
+│   │   └── user.py              # 用户 API 端点
 │   │
 │   ├── core/                    # 核心功能模块
 │   │   ├── __init__.py
 │   │   └── error_handlers.py    # HTTP 错误处理器
 │   │
-│   ├── models/                  # 数据模型（预留）
-│   │   └── __init__.py
+│   ├── models/                  # 数据模型
+│   │   ├── __init__.py
+│   │   └── user.py              # 用户模型 (Pydantic)
 │   │
-│   ├── services/                # 业务逻辑层（预留）
-│   │   └── __init__.py
+│   ├── services/                # 业务逻辑层
+│   │   ├── __init__.py
+│   │   └── user_service.py      # 用户业务逻辑
 │   │
 │   ├── middleware/              # 中间件（预留）
 │   │   └── __init__.py
@@ -52,20 +53,29 @@ PythonScaffolding/
 ### `src/api/` - API 路由
 基于 Blueprint 的 API 路由组织。
 
-- **`v1/`** - API 第一版本
-  - `__init__.py` - 创建 v1 blueprint
-  - `hello.py` - Hello 和 Ping 端点实现
+- **`user.py`** - 用户 API 端点
+  - `GET /api/users` - 获取所有用户
+  - `GET /api/users/<id>` - 根据 ID 获取用户
+  - `GET /api/users/username/<username>` - 根据用户名获取用户
 
 ### `src/core/` - 核心功能
 应用的核心功能模块。
 
 - **`error_handlers.py`** - 统一的 HTTP 错误处理（404、500、400、403、405）
 
-### `src/models/` - 数据模型（预留）
-用于定义数据库模型（SQLAlchemy ORM 等）。
+### `src/models/` - 数据模型
+使用 Pydantic 定义数据模型。
 
-### `src/services/` - 业务逻辑层（预留）
-用于实现复杂的业务逻辑，保持视图层简洁。
+- **`user.py`** - 用户数据模型，包含字段验证和序列化
+
+### `src/services/` - 业务逻辑层
+实现业务逻辑，保持视图层简洁。
+
+- **`user_service.py`** - 用户业务逻辑
+  - `get_all_users()` - 获取所有用户
+  - `get_user_by_id()` - 根据 ID 获取用户
+  - `get_user_by_username()` - 根据用户名获取用户
+  - 使用 Mock 数据（实际项目中应连接数据库）
 
 ### `src/middleware/` - 中间件（预留）
 用于实现请求/响应处理中间件（日志、认证等）。

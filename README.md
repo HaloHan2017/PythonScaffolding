@@ -52,6 +52,18 @@ uv run flask --app src run --debug
 
 访问 http://localhost:5000
 
+**测试 API:**
+```bash
+# Get all users
+curl http://localhost:5000/api/users
+
+# Get user by ID
+curl http://localhost:5000/api/users/1
+
+# Get user by username
+curl http://localhost:5000/api/users/username/johndoe
+```
+
 ### 5. 首次提交前安装 Pre-commit（必须）
 
 ```bash
