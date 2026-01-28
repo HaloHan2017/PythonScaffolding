@@ -16,11 +16,6 @@ def create_app() -> Flask:
     # Register blueprints
     register_blueprints(app)
 
-    # Register error handlers
-    from src.core.error_handlers import register_error_handlers
-
-    register_error_handlers(app)
-
     # Health check endpoint
     @app.route("/")
     def index():
