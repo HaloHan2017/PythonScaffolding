@@ -1,5 +1,5 @@
 """API module"""
 
-from src.api.user import UserController
+from src.api.user_controller import UserController
 
 __all__ = ["UserController"]

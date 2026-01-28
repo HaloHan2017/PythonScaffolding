@@ -1,11 +1,11 @@
-# Gunicorn production configuration
+# Gunicorn cloud configuration
 # Usage: gunicorn -c gunicorn.py src.app:app
 
 import multiprocessing
 import os
 
 # Server socket binding
-bind = f"{os.getenv('HOST', '0.0.0.0')}:{os.getenv('PORT', '8000')}"
+bind = f"{os.getenv('HOST', '0.0.0.0')}:{os.getenv('PORT', '8080')}"
 
 # Number of worker processes (recommended: CPU cores * 2 + 1)
 workers = int(os.getenv("WORKERS", multiprocessing.cpu_count() * 2 + 1))

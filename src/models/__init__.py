@@ -1,5 +1,5 @@
 """Models module"""
 
-from src.models.user import User
+from src.models.user_model import UserModel
 
-__all__ = ["User"]
+__all__ = ["UserModel"]
