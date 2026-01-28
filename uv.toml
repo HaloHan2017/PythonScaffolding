@@ -1,14 +1,13 @@
 # uv 配置文件
 # 配置公司内部 PyPI 镜像源
 
-#[tool.uv]
 # 主镜像源（公司内部 PyPI）
 #index-url = "https://pypi.company.com/simple"
+
+# 信任的主机（如果公司镜像使用自签名证书）
+#allow-insecure-host = ["pypi.company.com"]
 
 # 备用镜像源（可选，如果主源失败时使用）
 # extra-index-url = [
 #     "https://pypi.org/simple",  # 官方源作为备用
 # ]
-
-# 信任的主机（如果公司镜像使用自签名证书）
-# trusted-hosts = ["pypi.company.com"]

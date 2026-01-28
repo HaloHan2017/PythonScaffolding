@@ -24,7 +24,7 @@ COPY src ./src
 COPY gunicorn.py ./
 
 # Install dependencies using uv
-RUN uv sync --extra prod --no-dev
+RUN uv sync --extra cloud --no-dev
 
 # Create non-root user
 RUN useradd -m -u 1000 appuser && \
