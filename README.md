@@ -8,13 +8,17 @@
 - 📝 **简洁的 API** - 使用 Flask Blueprint 组织路由，支持版本化
 - 🏗️ **应用工厂模式** - 灵活的应用创建和配置
 - 🎨 **代码质量工具** - black、isort、flake8、mypy
-- 📦 **现代化依赖管理** - 使用 pyproject.toml + **uv**
+- 📦 **现代化依赖管理** - 使用 pyproject.toml + **uv**（比 pip 快 10-100 倍）
+- 🔒 **依赖锁定** - uv.lock 确保开发和生产环境依赖一致性
 - 🔧 **Docker 支持** - 容器化部署配置
 - 🎯 **可扩展架构** - 预留 models、services、middleware 目录
+- ✅ **Pre-commit 钩子** - 自动代码质量检查
 
 ## 🚀 快速开始
 
-### 1. 安装 uv 包管理器
+### 方式一：使用本项目作为模板
+
+#### 1. 安装 uv 包管理器
 
 ```bash
 # Windows
@@ -23,14 +27,14 @@ powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
 
 > 💡 更多 uv 使用方法请查看 [uv 使用指南](docs/uv-guide.md)
 
-### 2. 克隆项目
+#### 2. 克隆项目
 
 ```bash
 git clone <your-repo>
 cd PythonScaffolding
 ```
 
-### 3. 安装依赖
+#### 3. 安装依赖
 
 ```bash
 # 使用快捷命令
@@ -40,7 +44,7 @@ make.bat install
 uv sync --all-extras
 ```
 
-### 4. 运行项目
+#### 4. 运行项目
 
 ```bash
 # 使用快捷命令
@@ -64,7 +68,7 @@ curl http://localhost:5000/api/users/1
 curl http://localhost:5000/api/users/username/johndoe
 ```
 
-### 5. 首次提交前安装 Pre-commit（必须）
+#### 5. 首次提交前安装 Pre-commit（必须）
 
 ```bash
 uv run pre-commit install
@@ -72,12 +76,32 @@ uv run pre-commit install
 
 > 💡 Pre-commit 会在每次 `git commit` 前自动检查代码质量，详见 [Pre-commit 使用指南](docs/pre-commit.md)
 
+---
+
+### 方式二：从零开始创建新项目
+
+如果你想基于本项目的架构创建自己的新项目，请参考：
+
+📖 **[从零开始使用 uv 创建项目](docs/uv-guide.md#从零开始创建项目)**
+
+该指南包含：
+- ✅ 使用 `uv init` 初始化项目
+- ✅ 配置 `pyproject.toml` 和依赖管理
+- ✅ 创建项目目录结构
+- ✅ 设置开发环境和工具链
+- ✅ 配置 Git 和 Pre-commit
+
+
+
 ## 📚 更多文档
 
-- [📁 项目结构说明](docs/project-structure.md)
-- [🛠️ 可用命令列表](docs/commands.md)
-- [🔒 Pre-commit 使用指南](docs/pre-commit.md)
-- [💡 uv 包管理器指南](docs/uv-guide.md)
+| 文档 | 说明 |
+|------|------|
+| [💡 uv 包管理器指南](docs/uv-guide.md) | **从零开始**创建项目、依赖管理、镜像配置、最佳实践 |
+| [📁 项目结构说明](docs/project-structure.md) | 目录结构、各模块职责、设计理念 |
+| [🛠️ 可用命令列表](docs/commands.md) | make.bat 命令、uv 命令速查表 |
+| [🔒 Pre-commit 使用指南](docs/pre-commit.md) | Git hooks 配置、代码质量检查 |
+
 
 ## 🤝 贡献
 
@@ -91,5 +115,5 @@ MIT
 
 **项目版本**: 1.0.0
 **Python 版本**: >= 3.13
-**包管理器**: uv
-**最后更新**: 2026-01-28
+**包管理器**: uv (⚡ 比 pip 快 10-100 倍)
+**最后更新**: 2026-01-29

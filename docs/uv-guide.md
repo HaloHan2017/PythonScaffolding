@@ -1,5 +1,16 @@
 # 💡 uv 包管理器使用指南
 
+## 📋 目录
+
+- [为什么使用 uv？](#为什么使用-uv)
+- [安装 uv](#安装-uv)
+- [从零开始创建项目](#从零开始创建项目)
+- [uv 常用命令](#uv-常用命令)
+- [配置镜像源](#配置镜像源)
+- [从 pip 迁移到 uv](#从-pip-迁移到-uv)
+- [最佳实践](#最佳实践)
+- [故障排查](#故障排查)
+
 ## 为什么使用 uv？
 
 ### uv vs pip
@@ -25,6 +36,211 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
 安装完成后，即可使用 `uv` 命令替代 `pip` 命令。
+
+## 从零开始创建项目
+
+### 📦 方法一：使用 uv init（推荐新项目）
+
+```bash
+# 创建新项目目录
+mkdir my-flask-api
+cd my-flask-api
+
+# 初始化项目（创建 pyproject.toml）
+uv init
+
+# 指定 Python 版本
+uv python pin 3.13
+
+# 创建虚拟环境
+uv venv
+
+# 激活虚拟环境（Windows）
+.venv\Scripts\activate
+
+# 添加 Flask 依赖
+uv add flask pydantic
+
+# 添加开发依赖
+uv add --dev black isort flake8 mypy pre-commit
+
+# 添加生产依赖
+uv add --optional cloud gunicorn
+```
+
+### 📝 方法二：手动创建 pyproject.toml（类似本项目）
+
+**步骤 1**: 创建项目目录结构
+```bash
+mkdir my-flask-api
+cd my-flask-api
+```
+
+**步骤 2**: 创建 `pyproject.toml` 文件
+```toml
+[project]
+name = "my-flask-api"
+version = "0.1.0"
+description = "My Flask API project"
+authors = [{name = "Your Name", email = "your.email@example.com"}]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "Flask>=2.3.3",
+    "pydantic>=2.3.0",
+]
+
+[project.optional-dependencies]
+local = [
+    "black>=24.10.0",
+    "isort>=5.12.0",
+    "flake8>=6.1.0",
+    "mypy>=1.5.1",
+    "pre-commit>=4.5.1",
+]
+cloud = [
+    "gunicorn>=21.2.0",
+]
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 88
+target-version = ['py313']
+
+[tool.isort]
+profile = "black"
+line_length = 88
+
+[tool.mypy]
+python_version = "3.13"
+```
+
+**步骤 3**: 创建 `.python-version` 文件
+```bash
+echo 3.13 > .python-version
+```
+
+**步骤 4**: 创建项目结构
+```bash
+# Windows PowerShell
+New-Item -ItemType Directory -Path src, src\api, src\core, src\models, src\services, src\middleware, src\utils, docs
+New-Item -ItemType File -Path src\__init__.py, src\app.py, README.md
+```
+
+**步骤 5**: 安装依赖
+```bash
+# 创建虚拟环境
+uv venv
+
+# 激活虚拟环境（Windows）
+.venv\Scripts\activate
+
+# 同步所有依赖（包括开发依赖）
+uv sync --all-extras
+```
+
+**步骤 6**: 初始化 Git 和 Pre-commit
+```bash
+# 初始化 Git
+git init
+
+# 创建 .gitignore
+@"
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+dist/
+build/
+"@ | Out-File -FilePath .gitignore -Encoding utf8
+
+# 安装 pre-commit hooks
+uv run pre-commit install
+```
+
+### 🎯 项目模板结构
+
+创建完成后，你的项目应该是这样的结构：
+
+```
+my-flask-api/
+├── .venv/                 # 虚拟环境（uv venv 创建）
+├── .python-version        # Python 版本标记
+├── .gitignore             # Git 忽略文件
+├── pyproject.toml         # 项目配置和依赖
+├── uv.lock                # 依赖锁定文件（uv sync 生成）
+├── README.md              # 项目说明
+├── docs/                  # 文档目录
+├── src/                   # 源代码目录
+│   ├── __init__.py
+│   ├── app.py             # Flask 应用入口
+│   ├── api/               # API 路由
+│   │   ├── __init__.py
+│   │   └── user_controller.py
+│   ├── core/              # 核心功能
+│   │   ├── __init__.py
+│   │   ├── config.py
+│   │   └── database.py
+│   ├── models/            # 数据模型
+│   │   ├── __init__.py
+│   │   └── user_model.py
+│   ├── services/          # 业务逻辑
+│   │   ├── __init__.py
+│   │   └── user_service.py
+│   ├── middleware/        # 中间件
+│   │   └── __init__.py
+│   └── utils/             # 工具函数
+│       └── __init__.py
+└── tests/                 # 测试目录
+```
+
+### 🔧 创建开发脚本（可选）
+
+创建 `make.bat`（Windows）或 `Makefile`（Linux/Mac）来简化常用命令：
+
+```batch
+@echo off
+
+if "%1"=="" goto help
+if "%1"=="install" goto install
+if "%1"=="run" goto run
+if "%1"=="lint" goto lint
+goto help
+
+:install
+echo Installing dependencies...
+uv sync --all-extras
+goto end
+
+:run
+echo Starting Flask development server...
+uv run flask --app src run --debug
+goto end
+
+:lint
+echo Running code quality checks...
+uv run black src
+uv run isort src
+uv run flake8 src
+uv run mypy src
+goto end
+
+:help
+echo Available commands:
+echo   make.bat install  - Install dependencies
+echo   make.bat run      - Run development server
+echo   make.bat lint     - Run code quality checks
+goto end
+
+:end
+```
 
 ## uv 常用命令
 
