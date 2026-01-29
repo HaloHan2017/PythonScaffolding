@@ -2,7 +2,7 @@
 
 from contextvars import ContextVar
 from functools import wraps
-from typing import Optional
+from typing import Any, Optional
 
 from flask import Flask, g
 from peewee import (  # type: ignore[import-untyped]
@@ -102,6 +102,8 @@ def get_db() -> Database:
 
 
 class BaseModel(Model):
+    _meta: Any
+
     class Meta:
         database = None  # Will be set dynamically
 
