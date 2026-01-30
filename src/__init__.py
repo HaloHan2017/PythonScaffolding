@@ -2,36 +2,35 @@
 
 import os
 
-from flask import Flask, jsonify
+from fastapi import FastAPI
 
 
-def create_app() -> Flask:
-    """Create Flask application"""
-    app = Flask(__name__)
+def create_app() -> FastAPI:
+    """Create FastAPI application"""
+    app = FastAPI(
+        title="FastAPI API Scaffold",
+        version="1.0.0",
+        description="A modern FastAPI WebAPI scaffold",
+        debug=os.getenv("DEBUG", "False").lower() == "true",
+    )
 
-    # Load configuration
-    app.config["DEBUG"] = os.getenv("DEBUG", "False").lower() == "true"
-    app.config["ENV"] = os.getenv("FLASK_ENV", "development")
+    # Register routers
+    register_routers(app)
 
-    # Register blueprints
-    register_blueprints(app)
+    # Health check endpoints
+    @app.get("/", tags=["root"])
+    async def index():
+        return {"name": "FastAPI API Scaffold", "version": "1.0.0", "status": "running"}
 
-    # Health check endpoint
-    @app.route("/")
-    def index():
-        return jsonify(
-            {"name": "Flask API Scaffold", "version": "1.0.0", "status": "running"}
-        )
-
-    @app.route("/health")
-    def health():
-        return jsonify({"status": "healthy"}), 200
+    @app.get("/health", tags=["health"])
+    async def health():
+        return {"status": "healthy"}
 
     return app
 
 
-def register_blueprints(app: Flask):
-    """Register API blueprints"""
+def register_routers(app: FastAPI):
+    """Register API routers"""
     from src.api.user import UserController
 
-    app.register_blueprint(UserController)
+    app.include_router(UserController)

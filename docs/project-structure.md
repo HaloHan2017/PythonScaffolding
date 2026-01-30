@@ -87,5 +87,6 @@ PythonScaffolding/
 
 1. **简洁性** - 只保留必要的核心功能，避免过度设计
 2. **可扩展性** - 预留目录结构，支持项目成长（models、services、middleware）
-3. **标准化** - 遵循 Flask 和 Python 社区的最佳实践
+3. **标准化** - 遵循 FastAPI 和 Python 社区的最佳实践
 4. **现代工具链** - 使用 uv 进行快速依赖管理
+5. **异步优先** - 使用 async/await 提供高性能的 API 服务

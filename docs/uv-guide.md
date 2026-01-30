@@ -223,8 +223,8 @@ uv sync --all-extras
 goto end
 
 :run
-echo Starting Flask development server...
-uv run flask --app src run --debug
+echo Starting FastAPI development server...
+uv run uvicorn src.app:app --reload
 goto end
 
 :lint

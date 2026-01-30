@@ -1,11 +1,13 @@
-# Flask WebAPI Scaffold
+# FastAPI WebAPI Scaffold
 
-一个精简的、现代化的 Flask WebAPI 脚手架项目。
+一个精简的、现代化的 FastAPI WebAPI 脚手架项目。
 
 ## ✨ 特性
 
-- 🚀 **轻量级** - 只包含必需的依赖（Flask、pydantic）
-- 📝 **简洁的 API** - 使用 Flask Blueprint 组织路由，支持版本化
+- 🚀 **轻量级** - 只包含必需的依赖（FastAPI、pydantic、uvicorn）
+- 📝 **简洁的 API** - 使用 FastAPI APIRouter 组织路由，自动生成 OpenAPI 文档
+- ⚡ **高性能** - 基于 Starlette 和 Pydantic，异步支持，性能优异
+- 📖 **自动文档** - 自动生成交互式 API 文档（Swagger UI 和 ReDoc）
 - 🏗️ **应用工厂模式** - 灵活的应用创建和配置
 - 🎨 **代码质量工具** - ruff（超快的 linter + formatter）、mypy
 - 📦 **现代化依赖管理** - 使用 pyproject.toml + **uv**（比 pip 快 10-100 倍）
@@ -13,6 +15,7 @@
 - 🔧 **Docker 支持** - 容器化部署配置
 - 🎯 **可扩展架构** - 预留 models、services、middleware 目录
 - ✅ **Pre-commit 钩子** - 自动代码质量检查
+- 🌐 **生产就绪** - Gunicorn + Uvicorn 多进程部署支持
 
 ## 🚀 快速开始
 
@@ -47,25 +50,31 @@ uv sync --all-extras
 #### 4. 运行项目
 
 ```bash
-# 使用快捷命令
-make.bat run
+# 开发模式（自动重载）
+uv run uvicorn src.app:app --reload --host 0.0.0.0 --port 8000
 
-# 或使用 uv 命令
-uv run flask --app src run --debug
+# 或直接运行 app.py
+uv run python -m src.app
 ```
 
-访问 http://localhost:5000
+访问：
+- API 服务: http://localhost:8000
+- 交互式文档 (Swagger UI): http://localhost:8000/docs
+- 备用文档 (ReDoc): http://localhost:8000/redoc
 
 **测试 API:**
 ```bash
 # Get all users
-curl http://localhost:5000/api/users
+curl http://localhost:8000/api/users
 
 # Get user by ID
-curl http://localhost:5000/api/users/1
+curl http://localhost:8000/api/users/1
 
 # Get user by username
-curl http://localhost:5000/api/users/username/johndoe
+curl http://localhost:8000/api/users/username/johndoe
+
+# 或者直接访问交互式文档进行测试
+# http://localhost:8000/docs
 ```
 
 #### 5. 首次提交前安装 Pre-commit（必须）

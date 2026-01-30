@@ -33,7 +33,7 @@ echo Dependencies installed successfully!
 goto end
 :run
 echo Starting development server...
-uv run flask --app src run --debug --host 0.0.0.0 --port 5000
+uv run uvicorn src.app:app --reload --host 0.0.0.0 --port 8000
 goto end
 :format
 echo Formatting code with ruff...

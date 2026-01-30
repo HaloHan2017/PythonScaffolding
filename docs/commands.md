@@ -56,7 +56,7 @@ uv lock --upgrade                               # 更新所有依赖
    ```bash
    make.bat run
    # 或
-   uv run flask --app src run --debug
+   uv run uvicorn src.app:app --reload
    ```
 
 2. **代码修改后格式化**

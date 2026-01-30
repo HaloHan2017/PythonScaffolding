@@ -1,13 +1,14 @@
 [project]
-name = "flask-api-scaffold"
+name = "fastapi-api-scaffold"
 version = "1.0.0"
-description = "A modern Flask WebAPI scaffold"
+description = "A modern FastAPI WebAPI scaffold"
 authors = [{name = "Developer", email = "developer@example.com"}]
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "Flask>=2.3.3",
+    "fastapi>=0.109.0",
     "pydantic>=2.3.0",
+    "uvicorn[standard]>=0.27.0",
 ]
 
 [project.optional-dependencies]
@@ -18,6 +19,7 @@ local = [
 ]
 cloud = [
     "gunicorn>=21.2.0",
+    "uvicorn[standard]>=0.27.0",
 ]
 
 [build-system]

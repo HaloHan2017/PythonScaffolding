@@ -1,25 +1,26 @@
 """User API endpoints"""
 
-from flask import Blueprint, jsonify
+from fastapi import APIRouter, HTTPException
 
+from src.models.user import User
 from src.services import UserService
 
-UserController = Blueprint("user", __name__, url_prefix="/api/users")
+UserController = APIRouter(prefix="/api/users", tags=["users"])
 
 
-@UserController.route("", methods=["GET"])
-def get_users():
+@UserController.get("", response_model=dict)
+async def get_users():
     """Get all users
 
     Returns:
         JSON response with list of users
     """
     users = UserService.get_all_users()
-    return jsonify({"users": [user.model_dump() for user in users]}), 200
+    return {"users": [user.model_dump() for user in users]}
 
 
-@UserController.route("/<int:user_id>", methods=["GET"])
-def get_user(user_id: int):
+@UserController.get("/{user_id}", response_model=User)
+async def get_user(user_id: int):
     """Get user by ID
 
     Args:
@@ -30,12 +31,12 @@ def get_user(user_id: int):
     """
     user = UserService.get_user_by_id(user_id)
     if user:
-        return jsonify(user.model_dump()), 200
-    return jsonify({"error": "User not found"}), 404
+        return user
+    raise HTTPException(status_code=404, detail="User not found")
 
 
-@UserController.route("/username/<string:username>", methods=["GET"])
-def get_user_by_username(username: str):
+@UserController.get("/username/{username}", response_model=User)
+async def get_user_by_username(username: str):
     """Get user by username
 
     Args:
@@ -46,5 +47,5 @@ def get_user_by_username(username: str):
     """
     user = UserService.get_user_by_username(username)
     if user:
-        return jsonify(user.model_dump()), 200
-    return jsonify({"error": "User not found"}), 404
+        return user
+    raise HTTPException(status_code=404, detail="User not found")

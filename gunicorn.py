@@ -1,4 +1,4 @@
-# Gunicorn production configuration
+# Gunicorn production configuration with Uvicorn workers
 # Usage: gunicorn -c gunicorn.py src.app:app
 
 import multiprocessing
@@ -10,11 +10,8 @@ bind = f"{os.getenv('HOST', '0.0.0.0')}:{os.getenv('PORT', '8000')}"
 # Number of worker processes (recommended: CPU cores * 2 + 1)
 workers = int(os.getenv("WORKERS", multiprocessing.cpu_count() * 2 + 1))
 
-# Worker class
-worker_class = "sync"  # Options: sync, gevent, eventlet, tornado
-
-# Number of threads per worker
-threads = int(os.getenv("THREADS", 2))
+# Worker class - Use uvicorn worker for ASGI support
+worker_class = "uvicorn.workers.UvicornWorker"
 
 # Timeout settings (seconds)
 timeout = 120
@@ -26,7 +23,7 @@ errorlog = "-"  # Output to stderr
 loglevel = os.getenv("LOG_LEVEL", "info")
 
 # Process naming
-proc_name = "flask-api-scaffold"
+proc_name = "fastapi-api-scaffold"
 
 # Graceful restart
 graceful_timeout = 30
