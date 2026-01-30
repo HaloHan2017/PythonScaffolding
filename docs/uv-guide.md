@@ -62,7 +62,7 @@ uv venv
 uv add flask pydantic
 
 # 添加开发依赖
-uv add --dev black isort flake8 mypy pre-commit
+uv add --dev ruff mypy pre-commit
 
 # 添加生产依赖
 uv add --optional cloud gunicorn
@@ -92,9 +92,7 @@ dependencies = [
 
 [project.optional-dependencies]
 local = [
-    "black>=24.10.0",
-    "isort>=5.12.0",
-    "flake8>=6.1.0",
+    "ruff>=0.8.0",
     "mypy>=1.5.1",
     "pre-commit>=4.5.1",
 ]
@@ -103,16 +101,21 @@ cloud = [
 ]
 
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.black]
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.ruff]
 line-length = 88
-target-version = ['py313']
+target-version = "py313"
 
-[tool.isort]
-profile = "black"
-line_length = 88
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "C4", "UP"]
+
+[tool.ruff.format]
+quote-style = "double"
 
 [tool.mypy]
 python_version = "3.13"
@@ -226,9 +229,8 @@ goto end
 
 :lint
 echo Running code quality checks...
-uv run black src
-uv run isort src
-uv run flake8 src
+uv run ruff check src
+uv run ruff format --check src
 uv run mypy src
 goto end
 

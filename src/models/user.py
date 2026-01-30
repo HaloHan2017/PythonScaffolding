@@ -1,7 +1,5 @@
 """User data models"""
 
-from typing import Optional
-
 from pydantic import BaseModel, Field
 
 
@@ -11,7 +9,7 @@ class User(BaseModel):
     id: int = Field(..., description="User ID")
     username: str = Field(..., min_length=3, max_length=50, description="Username")
     email: str = Field(..., description="Email address")
-    full_name: Optional[str] = Field(None, description="Full name")
+    full_name: str | None = Field(None, description="Full name")
     is_active: bool = Field(default=True, description="Is user active")
 
     class Config:

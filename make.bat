@@ -23,7 +23,8 @@ echo   make.bat clean    - Clean temporary files
 goto end
 :install
 echo Installing dependencies...
-uv sync --all-extras
+set UV_LINK_MODE=copy
+uv sync --extra local
 if %ERRORLEVEL% neq 0 (
     echo Failed to install dependencies
     exit /b 1
@@ -35,17 +36,15 @@ echo Starting development server...
 uv run flask --app src run --debug --host 0.0.0.0 --port 5000
 goto end
 :format
-echo Formatting code with black and isort...
-echo Running black...
-uv run black src
+echo Formatting code with ruff...
+uv run ruff format src
 if %ERRORLEVEL% neq 0 (
-    echo Black formatting failed
+    echo Ruff formatting failed
     exit /b 1
 )
-echo Running isort...
-uv run isort src
+uv run ruff check --fix src
 if %ERRORLEVEL% neq 0 (
-    echo Isort formatting failed
+    echo Ruff linting failed
     exit /b 1
 )
 echo Code formatting completed!
@@ -53,31 +52,24 @@ goto end
 :lint
 echo Running code quality checks...
 echo.
-echo [1/4] Running flake8...
-uv run flake8 src
+echo [1/3] Running ruff check...
+uv run ruff check src
 if %ERRORLEVEL% neq 0 (
-    echo Flake8 check failed
+    echo Ruff check failed
     set LINT_FAILED=1
 )
 echo.
-echo [2/4] Running mypy...
+echo [2/3] Running ruff format --check...
+uv run ruff format --check src
+if %ERRORLEVEL% neq 0 (
+    echo Ruff format check failed
+    set LINT_FAILED=1
+)
+echo.
+echo [3/3] Running mypy...
 uv run mypy src
 if %ERRORLEVEL% neq 0 (
     echo Mypy check failed
-    set LINT_FAILED=1
-)
-echo.
-echo [3/4] Running black --check...
-uv run black --check src
-if %ERRORLEVEL% neq 0 (
-    echo Black check failed
-    set LINT_FAILED=1
-)
-echo.
-echo [4/4] Running isort --check...
-uv run isort --check-only src
-if %ERRORLEVEL% neq 0 (
-    echo Isort check failed
     set LINT_FAILED=1
 )
 echo.

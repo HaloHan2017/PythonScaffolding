@@ -21,15 +21,14 @@ uv sync --all-extras      # 安装所有依赖（包含开发工具）
 # 运行服务器
 uv run flask --app src run --debug              # 开发服务器
 
-# 代码质量
-uv run flake8 src                               # 代码检查
+# 代码质量检查
+uv run ruff check src                           # 代码检查（linting）
+uv run ruff format --check src                  # 格式检查
 uv run mypy src                                 # 类型检查
-uv run black --check src                        # 格式检查
-uv run isort --check-only src                   # import 排序检查
 
 # 代码格式化
-uv run black src                                # 格式化代码
-uv run isort src                                # 排序 imports
+uv run ruff format src                          # 格式化代码
+uv run ruff check --fix src                     # 自动修复 lint 问题
 
 # Pre-commit 钩子（代码提交前自动检查）
 uv run pre-commit install                       # 安装 git hooks（首次使用）
@@ -64,7 +63,7 @@ uv lock --upgrade                               # 更新所有依赖
    ```bash
    make.bat format
    # 或
-   uv run black src && uv run isort src
+   uv run ruff format src && uv run ruff check --fix src
    ```
 
 3. **提交前检查**

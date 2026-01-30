@@ -34,16 +34,14 @@ uv run pre-commit autoupdate
 项目配置了以下检查（`.pre-commit-config.yaml`）：
 
 1. **trailing-whitespace** - 移除行尾空格
-2. **end-of-file-fixer** - 确保文件以换行符结尾
-3. **check-yaml** - 验证 YAML 文件格式
-4. **check-added-large-files** - 防止提交大文件
-5. **check-merge-conflict** - 检查合并冲突标记
-6. **check-case-conflict** - 检查文件名大小写冲突
-7. **detect-private-key** - 检测私钥泄露
-8. **black** - 代码格式化
-9. **isort** - import 语句排序
-10. **flake8** - 代码风格检查
-11. **mypy** - 类型检查
+2. **check-yaml** - 验证 YAML 文件格式
+3. **check-added-large-files** - 防止提交大文件
+4. **check-merge-conflict** - 检查合并冲突标记
+5. **check-case-conflict** - 检查文件名大小写冲突
+6. **detect-private-key** - 检测私钥泄露
+7. **ruff** - 代码检查和自动修复（替代 flake8 + isort）
+8. **ruff-format** - 代码格式化（替代 black）
+9. **mypy** - 类型检查
 
 ## 工作流程示例
 
@@ -68,7 +66,7 @@ git commit -m "feat: add new feature"
 # 1. 查看错误信息，pre-commit 会告诉你哪些文件有问题
 
 # 2. 修复问题（很多问题会自动修复）
-# black 和 isort 会自动格式化代码
+# ruff 会自动格式化代码并修复大部分 lint 问题
 # 其他问题需要手动修复
 
 # 3. 重新暂存修复后的文件
@@ -105,8 +103,9 @@ A: 编辑 `.pre-commit-config.yaml` 文件，在对应的钩子前添加 `#` 注
 
 ### Q: 如何只运行特定的检查？
 
-A: 使用 `--hook-stage` 参数：
+A: 使用钩子 ID：
 ```bash
-uv run pre-commit run black --all-files
-uv run pre-commit run flake8 --all-files
+uv run pre-commit run ruff --all-files
+uv run pre-commit run ruff-format --all-files
+uv run pre-commit run mypy --all-files
 ```
